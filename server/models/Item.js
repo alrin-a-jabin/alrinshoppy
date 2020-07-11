@@ -16,7 +16,7 @@ const ItemSchema = new mongoose.Schema({
         type:String,
         required:true
       },
-      quality:{
+      quantity:{
         type:String,
         required:true
       }

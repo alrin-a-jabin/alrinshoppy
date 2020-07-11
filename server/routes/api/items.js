@@ -8,7 +8,7 @@ const Item = require('../../models/Item');
 //AdminAcess
 //publicacess
 router.post(
-    '/addpackage',
+    '/addpackagename',
     [
         check('packageName', 'PackageName is required').not().isEmpty(),
         check('amount', 'amount is required').not().isEmpty()
@@ -35,36 +35,44 @@ router.post(
 );
 
 //@router POST api/items/additemlist
-
 router.post(
-    '/additemlist/:item',
+    '/additemlist/:item_id',
     [
         check('itemName', 'itemName is required').not().isEmpty(),
-        check('quality', 'quality is required').not().isEmpty()
+        check('quantity', 'quantity is required').not().isEmpty()
     ],
-    async(req,res) =>{
+    async (req, res) => {
+ 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        
 
+        const {
+            itemName,
+            quantity
+        } = req.body;
 
+        // console.log(req.params.item_id)
+        const newExp = {
+            itemName,
+            quantity
+        };
+
+        // console.log(newExp)
+
+        try {
+
+            const item = await Item.findOne({ item: req.params.id });
+            item.itemsList.unshift(newExp);
+            await item.save();
+            res.json(item);
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
     }
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
+);
 
 
 
