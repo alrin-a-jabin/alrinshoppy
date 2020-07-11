@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const config = require('config');
 const { check, validationResult } = require('express-validator');
-const Item = require('../../models/Items');
+const Item = require('../../models/Item');
 
 // @route    POST api/items/addpackage
 //AdminAcess
@@ -36,22 +36,22 @@ router.post(
 
 //@router POST api/items/additemlist
 
-// router.post(
-//     '/addpackage',
-//     [
-//         check('itemName', 'itemName is required').not().isEmpty(),
-//         check('quality', 'quality is required').not().isEmpty()
-//     ],
-//     async(req,res) =>{
-//         const errors = validationResult(req);
-//         if (!errors.isEmpty()) {
-//             return res.status(400).json({ errors: errors.array() });
-//         }
+router.post(
+    '/additemlist/:item',
+    [
+        check('itemName', 'itemName is required').not().isEmpty(),
+        check('quality', 'quality is required').not().isEmpty()
+    ],
+    async(req,res) =>{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         
 
 
-//     }
-// )
+    }
+)
 
 
 
