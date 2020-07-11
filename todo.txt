@@ -1,0 +1,9 @@
+To Alrin:
+add routers, and a text file or a list of apis to access from backend.
+
+To Lakshin:
+
+
+
+Todo plan for project:
+Better UI,structure idea for the website.
