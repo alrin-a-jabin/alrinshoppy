@@ -7,3 +7,5 @@ To Lakshin:
 
 Todo plan for project:
 Better UI,structure idea for the website.
+sample website
+https://newbox.in/

@@ -13,7 +13,10 @@ app.use(express.json());
 
 app.use(cors());
 // Define Routes
-app.use('/api/items', require('./routes/api/items'));
+app.use('/api/products', require('./routes/api/products'));
+app.use('/api/checkpin', require('./routes/api/pin'));
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/orders', require('./routes/api/orders'));
 
 
 // app.use('/api/auth', require('./routes/api/auth'));

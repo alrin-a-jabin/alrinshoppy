@@ -2,27 +2,27 @@ const express = require('express');
 const router = express.Router();
 const config = require('config');
 const { check, validationResult } = require('express-validator');
-const Item = require('../../models/Item');
+const Product = require('../../models/Product');
 
-//get the item list
+//get the product list
 //public list
-router.get('/packagelist', async (req, res) => {
+router.get('/productlist', async (req, res) => {
     try {
-        const item = await Item.find();
-        res.json(item);
+        const product = await Product.find();
+        res.json(product);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-// @route    POST api/items/addpackage
+// @route    POST api/items/addproduct
 //Admin
 //PrivateAcess
 router.post(
-    '/addpackagename',
+    '/addproducts',
     [
-        check('packageName', 'PackageName is required').not().isEmpty(),
+        check('productName', 'productName is required').not().isEmpty(),
         check('amount', 'amount is required').not().isEmpty()
     ],
     async (req, res) => {
@@ -30,14 +30,14 @@ router.post(
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const { packageName, amount } = req.body;
+        const { productName, amount } = req.body;
         try {
-            let item = new Item({
-                packageName,
+            let product = new Product({
+                productName,
                 amount
             });
-            await item.save();
-            res.json(item);
+            await product.save();
+            res.json(product);
 
         } catch (err) {
             console.error(err.message);
@@ -46,29 +46,30 @@ router.post(
     }
 );
 
-//update the package list
-//api/item/updatepackage/:item_id
+//update the product list
+//to add product
+//api/product/updateproduct/:product_id
 router.put(
-    '/updatepackage/:item_id',
+    '/updateproduct/:product_id',
     [
-        check('packageName', 'PackageName is required').not().isEmpty(),
+        check('productName', 'productName is required').not().isEmpty(),
         check('amount', 'amount is required').not().isEmpty()
     ],
     async (req, res) => {
-        console.log(req.body.packageName, req.body.amount);
+        console.log(req.body.productName, req.body.amount);
 
         try {
-            const item = await Item.findOneAndUpdate({ _id: req.params.item_id },
+            const product = await Product.findOneAndUpdate({ _id: req.params.product_id },
                 {
-                    packageName: req.body.packageName,
+                    productName: req.body.productName,
                     amount: req.body.amount
                 }, { new: true });
-            if (!item) {
-                const error = new Error('Could not find any item.');
+            if (!product) {
+                const error = new Error('Could not find any product.');
                 error.statusCode = 404;
                 throw error;
             }
-            res.status(200).json({ message: 'updated.', item: item });
+            res.status(200).json({ message: 'updated.', product: product });
         } catch (err) {
             if (!err.statusCode) {
                 err.statusCode = 500;
@@ -82,7 +83,7 @@ router.put(
 //admin
 //privateAcess
 router.post(
-    '/additemlist/:item_id',
+    '/additemlist/:product_id',
     [
         check('itemName', 'itemName is required').not().isEmpty(),
         check('quantity', 'quantity is required').not().isEmpty()
@@ -96,17 +97,17 @@ router.post(
             itemName,
             quantity
         } = req.body;
-        // console.log(req.params.item_id)
+        // console.log(req.params.product_id)
         const newExp = {
             itemName,
             quantity
         };
         // console.log(newExp)
         try {
-            const item = await Item.findOne({ item: req.params.id });
-            item.itemsList.unshift(newExp);
-            await item.save();
-            res.json(item);
+            const product = await Product.findOne({ product: req.params.id });
+            product.itemsList.unshift(newExp);
+            await product.save();
+            res.json(product);
         } catch (err) {
             console.error(err.message);
             res.status(500).send('Server Error');
@@ -114,47 +115,44 @@ router.post(
     }
 );
 
-//delete the package list
+//delete the product list
 //private access
-router.delete('/deletepackage/:item_id', async (req, res) => {
+router.delete('/deleteproduct/:product_id', async (req, res) => {
     try {
-        // Remove item
-        await Item.findOneAndRemove({ item: req.params.id });
-        // Remove item
-        res.json({ msg: 'Item deleted' });
+        // Remove product
+        await Product.findOneAndRemove({ product: req.params.id });
+        // Remove product
+        res.json({ msg: 'product deleted' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-
-
-//delete the package list
-router.delete('/itemlist/:item_id/:list_id', async (req, res) => {
+//delete the product list
+router.delete('/itemslist/:product_id/:list_id', async (req, res) => {
     try {
-        const item = await Item.findById(req.params.item_id);
-        // console.log(item)
+        const product = await Product.findById(req.params.product_id);
+        // console.log(product)
         // Pull out comment
-        const itemlist = item.itemsList.find(
-            itemlist => itemlist.id === req.params.list_id
+        const productlist = product.itemsList.find(
+            productlist => productlist.id === req.params.list_id
         );
-        // console.log(itemlist)
+        // console.log(productlist)
         // Make sure comment exists
-        if (!itemlist) {
-            return res.status(404).json({ msg: 'itemlist does not exist' });
+        if (!productlist) {
+            return res.status(404).json({ msg: 'itemsList does not exist in the product' });
         }
         // Check user
         // if (comment.user.toString() !== req.user.id) {
         //     return res.status(401).json({ msg: 'User not authorized' });
         // }
-
-        item.itemsList = item.itemsList.filter(
+        product.itemsList = product.itemsList.filter(
             ({ id }) => id !== req.params.list_id
         );
-        console.log(item.itemsList);
-        await item.save();
-        return res.json({ msg: 'Item deleted' },item.itemsList);
+        console.log(product.itemsList);
+        await product.save();
+        return res.json({ msg: 'Product deleted' }, product.itemsList);
     } catch (err) {
         console.error(err.message);
         return res.status(500).send('Server Error');
